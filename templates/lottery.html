@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הגרלות פעילות</title>
+    <style>
+        /* משתני CSS לאחידות */
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #4CAF50;
+            --error-color: #f44336;
+            --border-radius: 8px;
+            --spacing-unit: 16px;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            line-height: 1.6;
+        }
+
+        /* כפתורי ניווט */
+        .button-container {
+            display: flex;
+            gap: var(--spacing-unit);
+            padding: var(--spacing-unit);
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #add-lottery {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #home {
+            background-color: #666;
+            color: white;
+        }
+
+        /* מכולה ראשית */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: calc(var(--spacing-unit) * 2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: calc(var(--spacing-unit) * 2);
+        }
+
+        /* עיצוב הגרלה בודדת */
+        .lottery-item {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: calc(var(--spacing-unit) * 1.5);
+            margin-bottom: var(--spacing-unit);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .lottery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .lottery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-unit);
+        }
+
+        /* תגי סטטוס */
+        .status-tag {
+            padding: calc(var(--spacing-unit) * 0.5) calc(var(--spacing-unit));
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .open { background-color: var(--secondary-color); color: white; }
+        .closed { background-color: var(--error-color); color: white; }
+
+        /* כפתור השתתפות */
+        .participate-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: calc(var(--spacing-unit) * 0.75) calc(var(--spacing-unit));
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .participate-btn:hover {
+            background-color: #1976D2;
+        }
+
+        /* טופס הוספת משתמש */
+        .add-user-section {
+            display: flex;
+            gap: var(--spacing-unit);
+            margin-top: var(--spacing-unit);
+        }
+
+        .add-user-section input {
+            flex: 1;
+            padding: calc(var(--spacing-unit) / 2);
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+
+        /* הודעות שגיאה */
+        .error-message {
+            color: var(--error-color);
+            margin-top: var(--spacing-unit);
+            padding: calc(var(--spacing-unit) / 2);
+            border-radius: var(--border-radius);
+            background-color: rgba(244, 67, 54, 0.1);
+            animation: fadeInOut 3s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* עיצוב מידע זוכה */
+        .winner-info {
+            background-color: #f8f9fa;
+            padding: calc(var(--spacing-unit) * 0.75);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-unit);
+        }
+
+        .winner-info h4 {
+            margin: 0 0 calc(var(--spacing-unit) / 2);
+            color: #666;
+        }
+
+        .winner-info p {
+            margin: 0 0 calc(var(--spacing-unit) / 2);
+            color: #444;
+        }
+
+        /* עיצוב למסך קטן */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-unit);
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            .add-user-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button id="add-lottery" onclick="window.location.href='/add_lottery'" class="btn">הוסף הגרלה</button>
+        <button id="home" onclick="window.location.href='/admin'" class="btn">חזרה לדף הבית</button>
+    </div>
+    <div class="container">
+        <h1>הגרלות פעילות</h1>
+        <div id="lotteries-container"></div>
+    </div>
+
+    <script>
+        async function fetchLotteries() {
+            try {
+                const response = await fetch('/get_lottery_json', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include' // חשוב לאימות המשתמש
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const lotteries = await response.json();
+                displayLotteries(lotteries);
+            } catch (error) {
+                console.error('Error fetching lotteries:', error);
+                showError('התרחשה שגיאה בטעינת ההגרלות');
+            }
+        }
+
+        function displayLotteries(lotteries) {
+            const container = document.getElementById('lotteries-container');
+            container.innerHTML = '';
+        
+            lotteries.forEach(lottery => {
+                const [id, price, ticketNumber, date, name, status,winnerid, winner] = lottery;
+        
+                const lotteryElement = document.createElement('div');
+                lotteryElement.className = 'lottery-item';
+        
+                let winnerInfoHtml = '';
+                if (winnerid !== null) {
+                    winnerInfoHtml = `
+                        <div class="winner-info">
+                            <h4>הזוכה:</h4>
+                            <p>${winner.winner.name} ${winner.winner.last_name}</p>
+                            <p>עיר: ${winner.winner.city}</p>
+                            <p>בית מדרש: ${winner.winner.beit_midrash}</p>
+                            <p>אימייל: ${winner.winner.email}</p>
+                            <p>טלפון: ${winner.winner.phone}</p>
+                        </div>
+                    `;
+                }
+        
+                lotteryElement.innerHTML = `
+                    <div class="lottery-header">
+                        <h3>${name}</h3>
+                        <span class="status-tag ${status}">${status}</span>
+                    </div>
+                    <p> מינימום ציון: ${price}%</p>
+                    <p>תאריך סיום: ${date}</p>
+                    ${status === 'open' ? 
+                        `<button class="participate-btn" onclick="participateInLottery(${id})"> בצע את ההגרלה</button>
+                        <input type="text" id="user-id-${id}" placeholder="הכנס מזהה משתמש">
+                        <button class="add-user-btn" onclick="addUserToLottery(${id})">הוסף משתמש</button>
+                        `: 
+                        '<p>ההגרלה כבר הסתיימה</p>'
+                    }
+                        
+                    ${winnerInfoHtml}
+                    <div class="error-message"></div>
+                `;
+        
+                container.appendChild(lotteryElement);
+            });
+        }
+
+        async function participateInLottery(lotteryId) {
+            try {
+                const response = await fetch(`/participate/${lotteryId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+        
+                const result = await response.json();
+                if (result.redirect) {
+                    window.location.href = result.redirect;  // מפנה את המשתמש לכתובת החדשה
+                }
+        
+            } catch (error) {
+                console.error('Error participating in lottery:', error);
+                showError(error.message);
+            }
+        }
+
+        async function addUserToLottery(lotteryId) {
+            const userId = document.getElementById(`user-id-${lotteryId}`).value;
+            if (!userId) {
+                showError("יש להזין מזהה משתמש");
+                return;
+            }
+        
+            try {
+                const response = await fetch(`/add_lottery_user?test_id=${lotteryId}&user_id=${userId}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+        
+                showError("המשתמש נוסף בהצלחה", true);
+            } catch (error) {
+                console.error('Error adding user to lottery:', error);
+                showError("שגיאה בהוספת המשתמש");
+            }
+        }
+
+        function showError(message, isSuccess = false) {
+            const container = document.querySelector('.container');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = `error-message ${isSuccess ? 'success' : ''}`;
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = message;
+            container.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 3000);
+        }
+
+        // טעינת ההגרלות בעת טעינת הדף
+        fetchLotteries();
+    </script>
+</body>
+</html>

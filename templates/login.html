@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* עיצוב חלון ההודעה */
+        #notification-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        /* הוספת overlay כהה */
+        .notification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: none;
+        }
+
+        .notification-overlay.show {
+            opacity: 1;
+            display: block;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* עיצוב התוכן */
+        .notification-icon {
+            float: left;
+            margin-right: 20px;
+            font-size: 24px;
+        }
+
+        .notification-content {
+            overflow: hidden;
+        }
+
+        #notification-title {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #notification-message {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* כפתור סגירה */
+        #close-notification {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        #close-notification:hover {
+            opacity: 1;
+        }
+
+        /* עיצוב לסוגי הודעות שונים */
+        .success .notification-icon {
+            color: #4CAF50;
+        }
+
+        .error .notification-icon {
+            color: #F44336;
+        }
+
+        .info .notification-icon {
+            color: #2196F3;
+        }
+        body{
+            background-color: #c9d6ff;
+            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .container{
+            background-color: #fff;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+            position: relative;
+            overflow: hidden;
+            width: 768px;
+            max-width: 100%;
+            min-height: 480px;
+        }
+        
+        .container p{
+            font-size: 14px;
+            line-height: 20px;
+            letter-spacing: 0.3px;
+            margin: 20px 0;
+        }
+        
+        .container span{
+            font-size: 12px;
+        }
+        
+        .container a{
+            color: #333;
+            font-size: 13px;
+            text-decoration: none;
+            margin: 15px 0 10px;
+        }
+        
+        .container button{
+            background-color: #512da8;
+            color: #fff;
+            font-size: 12px;
+            padding: 10px 45px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        
+        .container button.hidden{
+            background-color: transparent;
+            border-color: #fff;
+        }
+        
+        .container form{
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            height: 100%;
+        }
+        
+        .container input{
+            background-color: #eee;
+            border: none;
+            margin: 8px 0;
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+        }
+        select{
+            background-color: #eee;
+            border: none;
+            margin: 8px 0;
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+        }
+        
+        .form-container{
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+        
+        
+        .sign-in{
+            left: 0;
+            width: 50%;
+            z-index: 2;
+        }
+        
+        .container.active .sign-in{
+            transform: translateX(100%);
+        }
+        
+        .sign-up{
+            left: 0;
+            width: 50%;
+            opacity: 0;
+            z-index: 1;
+        }
+        
+        .container.active .sign-up{
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+            animation: move 0.6s;
+        }
+        
+        @keyframes move{
+            0%, 49.99%{
+                opacity: 0;
+                z-index: 1;
+            }
+            50%, 100%{
+                opacity: 1;
+                z-index: 5;
+            }
+        }
+        
+        .social-icons{
+            margin: 20px 0;
+        }
+        
+        .social-icons a{
+            border: 1px solid #ccc;
+            border-radius: 20%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 3px;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .toggle-container{
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: all 0.6s ease-in-out;
+            border-radius: 150px 0 0 100px;
+            z-index: 1000;
+        }
+        
+        .container.active .toggle-container{
+            transform: translateX(-100%);
+            border-radius: 0 150px 100px 0;
+        }
+        
+        .toggle{
+            background-color: #512da8;
+            height: 100%;
+            background: linear-gradient(to right, #5c6bc0, #512da8);
+            color: #fff;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: all 0.6s ease-in-out;
+        }
+        
+        .container.active .toggle{
+            transform: translateX(50%);
+        }
+        
+        .toggle-panel{
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 30px;
+            text-align: center;
+            top: 0;
+            transform: translateX(0);
+            transition: all 0.6s ease-in-out;
+        }
+        
+        .toggle-left{
+            transform: translateX(-200%);
+        }
+        
+        .container.active .toggle-left{
+            transform: translateX(0);
+        }
+        
+        .toggle-right{
+            right: 0;
+            transform: translateX(0);
+        }
+        
+        .container.active .toggle-right{
+            transform: translateX(200%);
+        }
+
+        .scrollable-container {
+            
+            height: 200px;
+            width: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            margin: 20px;
+        }
+
+    </style>
+    <title>Modern Login Page | AsmrProg</title>
+</head>
+
+<body>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form method="POST">
+                <h1>צור חשבון משתמש</h1>
+                <!-- 
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                <span>or use your email for registeration</span>
+                </div> -->
+                <div class="scrollable-container">
+                    <input type="text" id="name" placeholder="שם" required>
+                    <input type="text" id="family_name" placeholder="שם משפחה" required>
+                    <input type="text" id="id_number_input" placeholder="מספר זהות" required>
+                    <input type="text" id= "address" placeholder="כתובת" required>
+                    <input type="text" id= "phone" placeholder="טלפון" required>
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id= "password_input" placeholder="סיסמא" required>
+                    
+                    <select id="synagogue" required >
+                        <option value="">בחר בית כנסת</option>
+                    </select>
+                    <select id="city" required>
+                        <option value="">בחר עיר</option>
+                    </select>
+                
+                </div>
+                <button id="register_btn">הירשם</button>
+            </form>
+        </div>
+        <div class="form-container sign-in">
+            <form method="POST">
+                <h1>היכנס</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email password</span>
+                <input type="text" id="id_number" placeholder="הכנס את מספר הזהות שלך" required >
+                <input type="password" id="password" placeholder="הכנס את הסיסמא שלך" required >
+                <a href="#">Forget Your Password?</a>
+                <button id="login_btn">היכנס</button>
+            </form>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <!-- <img src="{{ url_for('static', filename='favicon.ico') }}" alt="תמונה"> -->
+                    <img src="favicon.jpg" alt="תמונה" 
+                    style="width: 150px; height: auto;
+                    padding: 10px;">
+                    <h1>Welcome Back!</h1>
+                    <p>הזן את הפרטים האישיים שלך כדי להשתמש בכל תכונות האתר</p>
+                    <button class="hidden" id="login">היכנס</button>
+                </div>
+                <div class="toggle-panel toggle-right">   
+                    <!-- <img src="{{ url_for('static', filename='favicon.ico') }}" alt="תמונה"> -->
+                    <img src="favicon.jpg" alt="תמונה" 
+                    style="width: 150px; height: auto;
+                    padding: 10px;">
+                    <h1>נמצא כאן לראשונה</h1>
+                    <p>הירשם עם הפרטים האישיים שלך כדי להשתמש בכל תכונות האתר</p>
+                    <button class="hidden" id="register">הירשם</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification-container">
+        <div id="notification" class="notification">
+            <div class="notification-icon">
+                <i id="notification-icon" class="fas"></i>
+            </div>
+            <div class="notification-content">
+                <h2 id="notification-title"></h2>
+                <p id="notification-message"></p>
+            </div>
+            <button id="close-notification">×</button>
+        </div>
+    </div>
+    <script>
+
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('register');
+        const loginBtn = document.getElementById('login');
+        
+        registerBtn.addEventListener('click', () => {
+            container.classList.add("active");
+        });
+        
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
+        });
+
+        async function login(event) {
+            event.preventDefault();
+            
+            const id_number = document.getElementById('id_number').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id_number, password })
+                });
+        
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // הצלחה - ביצוע הפניה
+                    window.location.href = data.redirect || '/';
+                } else {
+                    showNotification('error',type = 'שגיאת נתונים', message = data.message);
+                }
+            } catch (error) {
+                console.error('שגיאה בתהליך ההתחברות:', error);
+                showNotification('error',type = 'אירעה שגיאה בתהליך ההתחברות', message = data.message);
+            }
+        }
+        async function register(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById("name").value;
+            const password = document.getElementById("password_input").value;
+            const id_number = document.getElementById("id_number_input").value;
+            const family_name = document.getElementById("family_name").value;
+            const city = document.getElementById("city").value;
+            const address = document.getElementById("address").value;
+            const school = document.getElementById("synagogue").value;
+            const phone = document.getElementById("phone").value;
+            const email = document.getElementById("email").value;
+            
+  
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id_number, password, name, family_name, city, address, school, phone, email })
+                });
+        
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // הצלחה - ביצוע הפניה
+                    //window.location.href = data.redirect || '/';
+                    showNotification('success', message = data.message);
+                } else {    
+                    // כישלון - הצגת הודעת שגיאה    
+                    showNotification('error',type = 'שגיאת נתונים', message = data.message);
+                }
+            } catch (error) {
+                console.error('שגיאה בתהליך ההרשמה:', error);
+                showNotification('error',type = 'אירעה שגיאה בתהליך ההתחברות', message = data.message);    
+            }
+        }
+
+        // הוספת מאזין אירועים לכפתור ההתחברות
+        document.getElementById('login_btn').addEventListener('click', login);
+        
+        // הוספת מאזין אירועים לכפתור ההרשמה
+        document.getElementById('register_btn').addEventListener('click', register);
+
+
+        // הוספת תמיכה במגע למסכי מגע
+        document.querySelectorAll('.form-container form').forEach(form => {
+            form.addEventListener('touchmove', function(e) {
+                e.stopPropagation();
+            }, { passive: true });
+        });
+        
+
+        // טיפול בחלון קופץ
+
+        const overlay = document.createElement('div');
+        overlay.className = 'notification-overlay';
+        document.body.appendChild(overlay);
+
+        function showNotification(type, title = '', message = '') {
+            const notification = document.getElementById('notification');
+            const container = document.getElementById('notification-container');
+            const icon = document.getElementById('notification-icon');
+            const notificationTitle = document.getElementById('notification-title');
+            const notificationMessage = document.getElementById('notification-message');
+        
+            // הגדרת טקסט ברירת מחדל
+            switch(type) {
+                case 'success':
+                    title = title || 'הפעולה בוצעה בהצלחה!';
+                    message = message || 'הנתונים נשמרו בהצלחה.';
+                    icon.className = 'fas fa-check';
+                    break;
+                case 'error':
+                    title = title || 'שגיאה!';
+                    message = message || 'התרחשה שגיאה. נסה שוב.';
+                    icon.className = 'fas fa-times';
+                    break;
+                case 'info':
+                    title = title || 'מידע חשוב';
+                    message = message || 'יש לך מידע חדש.';
+                    icon.className = 'fas fa-info';
+                    break;
+            }
+        
+            // עדכון התוכן
+            notificationTitle.textContent = title;
+            notificationMessage.textContent = message;
+        
+            // הסרת כל הקלאסים הקודמים
+            notification.classList.remove('success', 'error', 'info');
+            
+            // הוספת הקלאס המתאים
+            notification.classList.add(type);
+
+            overlay.classList.add('show');
+            
+            // הצגת ההודעה
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+        
+            // סגירה אוטומטית אחרי 5 שניות
+            setTimeout(() => {
+                closeNotification();
+            }, 2000);
+        }
+        
+        function closeNotification() {
+            overlay.classList.remove('show');
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 400);
+        }
+        
+        // הוספת מאזיני אירועים
+        document.getElementById('close-notification').addEventListener('click', closeNotification);
+    
+        const synagogues = ["בית כנסת א", "בית כנסת ב", "בית כנסת ג", "בית כנסת ד"];
+        const selectElement = document.getElementById("synagogue");
+    
+        synagogues.forEach(name => {
+            let option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            selectElement.appendChild(option);
+        });
+
+        const city = ["ירושלים", "בית שמש", "אשדוד", "קרית גת", "חיפה", "הר יונה", "קוממיות"];
+        const selectElement2 = document.getElementById("city");
+    
+        city.forEach(name => {
+            let option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            selectElement2.appendChild(option);
+        });
+    
+    </script>
+</body>
+
+</html>
+
+

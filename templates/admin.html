@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול מבחנים</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;600&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #f8f9fa;
+            --background-color: #edf2f7;
+            --text-color: #333;
+            --accent-color: #ff4757;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            direction: rtl;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            box-shadow: var(--card-shadow);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-links button {
+            background: transparent;
+            border: 2px solid white;
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links button:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .nav-links button.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+            transition: background 0.3s ease;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        #search-box {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .column-search {
+            width: 40px;
+            height: 30px;
+            padding: 5px;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 15px;
+            background: #f0f0f0;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .column-search::before {
+            content: "🔍";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: gray;
+            font-size: 1rem;
+        }
+        
+
+        
+        .column-search:focus {
+            width: 180px;
+            padding: 8px;
+            background: white;
+            text-align: right;
+            cursor: text;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+        .sort-arrow {
+            margin-left: 5px;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+        
+        th[data-sort-order='-1'] .sort-arrow {
+            transform: rotate(180deg); /* הופך את החץ לכיוון הנכון */
+        }
+
+        .filter-btn {
+            display: block;
+            margin: 10px auto;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        
+        .download-btn {
+            background: green;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            margin-left: 10px;
+        }
+        
+        .download-btn:hover {
+            transform: scale(1.1);
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* ריווח בין הכפתורים */
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            border: none;
+        }
+        
+        .filter-btn {
+            background: #0056b3;
+            color: white;
+        }
+        
+        .filter-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .download-btn {
+            background: #00b35f;
+            color: white;
+        }
+        
+        .download-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-6">
+        <nav class="navbar animate__animated animate__fadeInDown ">
+            <div class="logo">מערכת ניהול מבחנים  
+                <img src="/favicon.jpg" alt="תמונה" style="Float: right; width: 150px; height: auto; padding: 10px;">
+            </div>
+            
+            <div class="nav-links flex gap-4 justify-center ">
+                <button onclick="showTests()" class="btn hover:scale-105 transition-transform active">
+                    מבחנים
+                </button>
+                <button onclick="showUsers()" class="btn hover:scale-105 transition-transform">
+                    משתמשים
+                </button>
+                <button onclick="showResults()" class="btn hover:scale-105 transition-transform">
+                    תוצאות
+                </button>
+                <button class="btn hover:scale-105 transition-transform"
+                onclick="window.location.href='/Adding_test'"
+                >הוספת מבחן</button>
+                <button class="btn hover:scale-105 transition-transform"
+                onclick="window.location.href='/get_lottery'"
+                >ניהול הגרלות </button>
+                <button class="btn hover:scale-105 transition-transform"
+                onclick="window.location.href='/home'"
+                >חזרה לדף הבית</button>
+            </div>
+        </nav>
+        
+        <div id="stats-container" class="bg-white p-4 rounded-lg shadow-md mb-4">
+            <h2 class="text-xl font-bold mb-2">📊 סטטיסטיקות</h2>
+            <p><strong>👥 מספר המשתמשים:</strong> <span id="total-users">0</span></p>
+            <p><strong>📄 מספר מבחנים:</strong> <span id="total-tests">0</span></p>
+            <p><strong>📊 ממוצע ציונים:</strong> <span id="average-score">0</span></p>
+        </div>
+        
+        
+        <main id="content" class="mt-6 animate__animated animate__fadeIn">
+            <!-- תוכן יוכנס דינמית -->
+        </main>
+    </div>
+    <footer class="footer">
+        <p>© 2025 מערכת ניהול מבחנים | כל הזכויות שמורות</p>
+    </footer>
+    
+    <script>
+        
+        let originalData = []; // לשמירת הנתונים המקוריים לסינון
+        
+        function sortTable(column, order) {
+            const sortedData = [...originalData].sort((a, b) => {
+                const valA = a[column];
+                const valB = b[column];
+        
+                if (typeof valA === "string") {
+                    return order * valA.localeCompare(valB);
+                }
+                return order * (valA - valB);
+            });
+        
+            renderTable(sortedData);
+        }
+        
+        function handleSort(column) {
+            const currentOrder = column.dataset.sortOrder || 1; // 1 for ascending, -1 for descending
+            const newOrder = currentOrder === 1 ? -1 : 1;
+            column.dataset.sortOrder = newOrder;
+            sortTable(column.dataset.column, newOrder);
+        }
+        
+
+        async function fetchAndDisplayData(url, containerId) {
+            const container = document.getElementById(containerId);
+            
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`שגיאה בשליחת הבקשה: ${response.statusText}`);
+                }
+        
+                originalData = await response.json(); // שמירת הנתונים המקוריים
+        
+                if (!Array.isArray(originalData)) {
+                    throw new Error('הנתונים שהתקבלו אינם תקינים');
+                }
+        
+                if (originalData.length === 0) {
+                    container.innerHTML = '<div class="no-data">אין נתונים להצגה</div>';
+                    return;
+                }
+
+                renderTable(originalData);
+                
+            } catch (error) {
+                console.error('שגיאה:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <h3>שגיאה בטעינת הנתונים</h3>
+                        <p>${error.message}</p>
+                        <button onclick="location.reload()">נסה שוב</button>
+                    </div>
+                `;
+            }
+        }
+
+        function expandSearch(input) {
+            input.style.width = "180px";
+            input.style.padding = "8px";
+            input.style.textAlign = "right";
+        }
+        
+        function shrinkSearch(input) {
+            if (!input.value) {
+                input.style.width = "40px";
+                input.style.padding = "5px";
+                input.style.textAlign = "center";
+            }
+        }
+        
+        // פונקציית filterTable מעודכנת
+        function filterTable() {
+            const searchInputs = document.querySelectorAll('.column-search');
+            let filteredData = originalData;
+        
+            searchInputs.forEach(input => {
+                const column = input.dataset.column;
+                const term = input.value.trim().toLowerCase();
+        
+                if (term) {
+                    filteredData = filteredData.filter(item => 
+                        String(item[column]).toLowerCase().includes(term)
+                    );
+                }
+            });
+        
+            renderTable(filteredData);
+        }
+        
+
+        // פונקציית renderTable מעודכנת עם בדיקות שגיאה
+        function renderTable(data) {
+            if (!Array.isArray(data) || !data.length) {
+                document.getElementById('content').innerHTML = '<div class="no-data">אין נתונים להצגה</div>';
+                return;
+            }
+
+
+            // סטטיסטיקות
+            document.getElementById("total-users").textContent = data.length;  // מספר משתמשים
+            const testCount = data.filter(item => item["מזהה מבחן"]).length;
+            document.getElementById("total-tests").textContent = testCount; // מספר מבחנים
+
+            const scores = data.map(item => parseFloat(item["ציון"])).filter(score => !isNaN(score));
+            const averageScore = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2) : "אין ציונים";
+            document.getElementById("average-score").textContent = averageScore; // ממוצע ציונים
+            
+            
+            // בניית טבלה
+            const container = document.getElementById('content');
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            ${Object.keys(data[0]).map(key => `<th>${key}</th>`).join('')}
+                        </tr>
+                            <!-- כפתורים -->
+                            <div class="button-container">
+                                <button onclick="filterTable()" class="btn filter-btn">🔍 סנן</button>
+                                <button onclick="downloadCSV()" class="btn download-btn">⬇️ הורד נתונים</button>
+                            </div>
+                        <tr>
+                            ${Object.keys(data[0]).map(key => `
+                                <td>
+                                    <input type="text" class="column-search" placeholder="🔍" data-column="${key}" 
+                                        onfocus="expandSearch(this)" onblur="shrinkSearch(this)">
+                                </td>
+                            `).join('')}
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        ${data.map(item => `
+                            <tr>${Object.values(item).map(value => `<td>${value}</td>`).join('')}</tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+        
+
+            `;
+        }
+        
+        
+        
+        function downloadCSV() {
+            if (!originalData.length) {
+                alert("אין נתונים זמינים להורדה.");
+                return;
+            }
+        
+            const headers = Object.keys(originalData[0]).join(","); // כותרות העמודות
+            const rows = originalData.map(row => Object.values(row).map(value => `"${value}"`).join(",")).join("\n");
+        
+            const csvContent = `data:text/csv;charset=utf-8,${headers}\n${rows}`;
+            const encodedUri = encodeURI(csvContent);
+        
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        
+        
+        
+        function filterTableByColumn(column, searchTerm) {
+            const rows = document.querySelectorAll('#table-body tr');
+            const columnIndex = Object.keys(originalData[0]).indexOf(column);
+        
+            rows.forEach(row => {
+                const cell = row.children[columnIndex];
+                const cellText = cell ? cell.innerText.toLowerCase() : '';
+                row.style.display = cellText.includes(searchTerm.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        
+        function showTests() {
+            setActiveButton('מבחנים');
+            fetchAndDisplayData('/api/tests', 'content');
+        }
+        
+        function showUsers() {
+            setActiveButton('משתמשים');
+            fetchAndDisplayData('/api/users', 'content');
+        }
+        
+        function showResults() {
+            setActiveButton('תוצאות');
+            fetchAndDisplayData('/api/results', 'content');
+        }
+        
+        function setActiveButton(text) {
+            document.querySelectorAll('.nav-links button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === text) btn.classList.add('active');
+            });
+        }
+        
+
+    </script>
+</body>
+</html>

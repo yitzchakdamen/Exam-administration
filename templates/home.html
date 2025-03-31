@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת מבחנים</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .body-2{
+            background-color: #c9d6ff;
+            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .test-card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .score-tag {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            
+        }
+        .score-tag2 {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            
+        }
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            position: absolute;
+            top: 170px;
+            right: 150px;
+            z-index: 10;
+        }
+        .take-test-btn {
+            position: absolute;
+            z-index: 10;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.2);
+        }
+        .take-test-btn_2 {
+            bottom: 20px;
+            margin: 20px;
+            z-index: 10;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.2);
+        }
+        .take-test-btn_3 {
+            margin-left: 20px;
+            bottom: 20px;
+            z-index: 10;
+            background: linear-gradient(135deg, #3c80c0 0%, #150478 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(16, 61, 185, 0.2);
+        }
+        .take-test-btn_4 {
+            bottom: 20px;
+            z-index: 10;
+            background: linear-gradient(135deg, #c1d0dd 0%, #6e6c77 100%);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .take-test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16,185,129,0.3);
+        }
+        .test-content {
+            padding: 20px;
+            padding-top: 60px;
+        }
+        .test-type {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .test-details {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 35px;
+            background: linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%);
+            border-radius: 20px;
+            box-shadow: 20px 20px 60px #e2e2e2,
+                       -20px -20px 60px #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-title {
+            text-align: center;
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 35px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .form-title::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding-top: 30px;
+            padding-bottom: 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3),
+                        inset 0 2px 4px rgba(0,0,0,0.05);
+            background: white;
+        }
+        
+        .form-input:focus + .floating-label {
+            transform: translateY(-25px);
+            font-size: 14px;
+            color: #2980b9;
+        }
+        
+        .floating-label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .submit-button {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            padding: 18px 36px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 25px;
+        }
+        
+        .submit-button:hover {
+            background: linear-gradient(90deg, #2980b9, #3498db);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        /* אנימציות נוספות */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .form-container:hover {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* אפקט זוהר לכפתור */
+        .submit-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .submit-button:hover::after {
+            opacity: 1;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .progress-chart-container {
+            background: linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #333;
+            position: relative;
+        }
+        
+        .chart-title::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 2px;
+        }
+        
+        .chart-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: right;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .chart-area {
+            height: 300px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .data-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .data-point:hover {
+            transform: scale(1.5);
+            z-index: 10;
+        }
+        
+        .data-label {
+            position: absolute;
+            top: -25px;
+            right: -15px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .data-point:hover .data-label {
+            opacity: 1;
+        }
+        .take-lottery-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ffb100);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 10px 140px;
+        }
+        
+        .take-lottery-btn:hover {
+            background: linear-gradient(135deg, #ff4d4d, #ff9000);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .take-lottery-btn:active {
+            background: linear-gradient(135deg, #e64a4a, #e68a00);
+            transform: scale(0.98);
+        }
+        
+    </style>
+</head>
+<body class="body-2 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- פרטי משתמש -->
+            <div class="md:col-span-1 bg-white rounded-lg shadow-xl p-6 ">
+                <div class="gradient-bg p-6 rounded-lg mb-6">
+                    <div class="flex justify-center items-center mb-4">
+                        <div class="w-20 h-20 rounded-full bg-gray-200 flex justify-center items-center ">
+                          <i class="fas fa-user text-gray-400 text-3xl"></i>
+                        </div>
+                      </div>                       
+                    <h2 class="text-2xl text-gray-600 font-bold text-white mb-2 text-center  ">פרטי משתמש</h2>
+                    <p class="text-gray-400 text-center">מידע אישי והתקדמות</p>
+                </div>
+                
+                <div id="user-info" class="space-y-4">
+                    <!-- יתווסף דינמית -->
+                </div>
+                <div class="flex justify-center items-center mb-4">            
+                    <button class="take-test-btn_2"
+                    onclick="window.location.href='/logout'"
+                    >התנתק</button>
+                </div>
+                <div class="flex justify-center items-center mb-4">            
+                    <button class="take-test-btn_3"
+                    onclick="window.location.href='/about'"
+                    >אודות התוכנית אהבת תורה</button>
+                    <button class="take-test-btn_4"
+                    onclick="window.location.href='/secure_page'"
+                    >כניסה מנהל</button>
+                </div>           
+                
+                <div class=" justify-center items-center ">
+                    <div class="form-container">
+                        <div class="form-title">צור קשר עימנו</div>
+                        
+                        <form id="feedbackForm" onsubmit="handleSubmit(event)">
+                            <div class="form-group">
+                                <input type="text" id="name" name="name" class="form-input" required placeholder=": שם מלא ">
+                                <label for="name" class="floating-label">שם מלא</label>
+                            </div>
+                    
+                            <div class="form-group">
+                                <input type="email" id="email" name="email" class="form-input" required placeholder="כתובת email">
+                                <label for="email" class="floating-label">כתובת אימייל</label>
+                            </div>
+                    
+                            <div class="form-group">
+                                <textarea id="message" name="message" class="form-input" rows="5" required placeholder="כתבו את הודעתכם כאן..."></textarea>
+                                <label for="message" class="floating-label">הודעתך</label>
+                            </div>
+                    
+                            <button type="submit" class="submit-button">
+                                שלח הודעה
+                            </button>
+                        </form>
+                    </div>   
+     
+                </div>
+            </div>
+
+            <!-- מבחנים -->
+            <div class="md:col-span-2">
+                <div class="gradient-bg p-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg mb-6 flex items-center">
+                    <img src="favicon.jpg" alt="תמונה" style="width: 150px; height: auto; padding: 10px;">
+                    <div class="ml-4">
+                        <h2 class="text-2xl font-bold text-white mb-2">המבחנים שלי</h2>
+                        <p class="text-gray-200">התקדמות וציונים</p>
+                    </div>
+                </div>
+                <div id="progress-chart" class="progress-chart-container">
+                    <div class="chart-header">
+                        <h2 class="chart-title">התקדמות במבחנים</h2>
+                        <div class="chart-stats">
+                            <!-- יתווסף דינמית -->
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <!-- יתווסף דינמית -->
+                    </div>
+                </div>
+                <div id="tests-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- יתווסף דינמית -->
+                </div>
+            </div>
+        </div>
+                <!-- מודל תוצאות ההגרלה יתווסך -->
+        <div class="modal" id="lotteryModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">תוצאות ההגרלה</h5>
+                    </div>
+                    <div class="modal-body">
+                        <!-- נתוני ההגרלה יוצגו כאן -->
+                        <div id="lotteryResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const baseUrl = window.location.origin;  // כתובת הבסיס של האתר
+        let userData;
+        
+        async function stert() {
+            await fetchData(); // מוודאים שהנתונים נטענים לפני המשך הקוד
+            
+            if (!userData) {
+                console.error("שגיאה: הנתונים לא נטענו כראוי.");
+                return;
+            }
+            renderUserInfo();
+            renderTests();
+        };
+        
+
+        async function fetchData() {
+            const url = `${baseUrl}/getProfile`;  // יוצרים את הכתובת המלאה
+            const response = await fetch(url);
+            userData = await response.json();
+        }
+
+        function getScoreColor(score) {
+            if (score >= 90) return 'bg-green-500 hover:bg-green-600';
+            if (score >= 80) return 'bg-green-400 hover:bg-green-500';
+            if (score >= 70) return 'bg-yellow-500 hover:bg-yellow-600';
+            if (score >= 60) return 'bg-orange-500 hover:bg-orange-600';
+            return 'bg-red-500 hover:bg-red-600';
+        }
+
+        function renderUserInfo() {
+            const userInfo = document.getElementById('user-info');
+            const user = userData.personal_info;
+            
+            userInfo.innerHTML = `
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-gray-100 p-2 rounded-full">
+                        <i class="fas fa-user text-gray-400 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold">${user.name} ${user.last_name}</h3>
+                        <p class="text-gray-600">${user.beit_midrash}</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <p class="text-gray-600">אימייל: ${user.email}</p>
+                    <p class="text-gray-600">טלפון: ${user.phone}</p>
+                    <p class="text-gray-600">עיר: ${user.city}</p>
+                    <p class="text-gray-600">כתובת: ${user.address}</p>
+                </div>
+            `;
+        }
+
+        function renderTests() {
+            const container = document.getElementById('tests-container');
+            container.innerHTML = ''; // לנקות תוכן קודם
+            
+            userData.tests.slice().reverse().forEach(test => { // הוספת .slice() כדי לא לשנות את המערך המקורי
+                const testElement = document.createElement('div');
+                testElement.className = `test-card bg-white rounded-lg shadow-xl p-6`;
+                
+                let scoreElement = '';
+                let lotteryElement = '';
+        
+                if (test.score !== null) {
+                    const colorClasses = getScoreColor(test.score);
+                    scoreElement = `
+                        <div class="score-tag ${colorClasses}">
+                            ציון: ${test.score}
+                        </div>
+                    `;
+                } else {
+                    scoreElement = `
+                    <div class="score-tag2">
+                        <button class="take-test-btn" data-id="${test.test_id}">
+                            <i class="fas fa-pen mr-2"></i>
+                            עשה מבחן
+                        </button>
+                    </div>
+                    `;
+                }
+
+                if (test.lottery !== null) {
+                    lotteryElement = `
+                        <div class="score-tag3">
+                            <button class="take-lottery-btn" data-id="${test.test_id}">
+                                <i class="fas fa-ticket-alt mr-2"></i>
+                                הגרלה!!
+                            </button>
+                        </div>
+                    `;      
+                }
+    
+                testElement.innerHTML = `
+                    <div class="relative">
+                        ${lotteryElement}
+                        ${scoreElement}
+                        <div class="test-content">
+                            <div class="test-type text-xl font-bold mb-2">${test.test_type}</div>
+                            <div class="test-type text-xl font-bold mb-2">
+                                ${test.test_id} <i class="fas fa-hashtag"></i></div>
+                            <div class="test-details space-y-1">
+                                <p>מסכת: ${test.tract}</p>
+                                <p>עמודים: ${test.From_page} - ${test.Up_to_page}</p>
+                                <p>שבוע: ${test.week}</p>
+                                <p>חודש: ${test.month}</p>
+                                <p>שנה: ${test.year}</p>
+                            ${test.score !== null ? 
+                                `<div class="text-sm text-gray-500 mt-4">
+                                    תאריך: ${test.test_date}
+                                </div>` : 
+                                ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(testElement);
+            });
+        
+            renderProgressChart();
+        }
+        
+
+        function renderProgressChart() {
+            const chartContainer = document.getElementById('progress-chart');
+            const chartStats = chartContainer.querySelector('.chart-stats');
+            const chartArea = chartContainer.querySelector('.chart-area');
+        
+            // ניקוי תוכן קיים
+            chartStats.innerHTML = '';
+            chartArea.innerHTML = '';
+        
+            // סינון מבחנים עם ציון
+            const completedTests = userData.tests.filter(test => test.score !== null);
+            if (completedTests.length === 0) return; // אין מה להציג
+        
+            const totalTests = userData.tests.length;
+            const averageScore = Math.round(
+                completedTests.reduce((acc, test) => acc + test.score, 0) / completedTests.length
+            );
+        
+            // הוספת סטטיסטיקות
+            const statsHtml = `
+                <div class="stat-item">
+                    <span>מבחנים שהושלמו</span>
+                    <strong>${completedTests.length}/${totalTests}</strong>
+                </div>
+                <div class="stat-item">
+                    <span>ממוצע ציונים</span>
+                    <strong>${averageScore}</strong>
+                </div>
+            `;
+            chartStats.innerHTML = statsHtml;
+        
+            // חישוב טווח ציונים
+            const scores = completedTests.map(test => test.score);
+            const maxScore = Math.max(...scores);
+            const minScore = Math.min(...scores);
+            const scoreRange = maxScore === minScore ? 1 : maxScore - minScore; // מניעת חלוקה באפס
+        
+            // הוספת נקודות לגרף
+            completedTests.forEach((test, index) => {
+                const xPosition = `${(index / (completedTests.length - 1)) * 80}%`;
+                const yPosition = `${20 + ((maxScore - test.score) / scoreRange) * 60}%`; // להפוך את הכיוון ולתת מרווח
+        
+                const dataPointHtml = `
+                    <div class="data-point" style="left: ${xPosition}; top: ${yPosition}">
+                        <span class="data-label">${test.score}</span>
+                    </div>
+                `;
+        
+                chartArea.innerHTML += dataPointHtml;
+            });
+        }
+        
+        
+        
+        // טעינת התוכן
+        document.addEventListener('DOMContentLoaded', () => {
+            stert();
+        
+            // האזנה ללחיצות על כל ה-container
+            document.getElementById('tests-container').addEventListener('click', (event) => {
+                const button = event.target.closest('.take-test-btn');
+                if (button) {
+                    const testId = button.getAttribute('data-id');
+                    window.location.href = `/test/${testId}`; // ניתוב לעמוד המבחן
+                }
+                const button_lottery = event.target.closest('.take-lottery-btn');
+                if (button_lottery) {
+                    const testId = button_lottery.getAttribute('data-id');
+
+                    href = `/lottery/${testId}`; // ניתוב לעמוד המבחן
+                    // הוספת הקוד החדש
+                    fetch(href)
+                    .then(response => response.json())
+                    .then(data => {
+                        // הכנת התוכן להצגה
+                        let content = `
+                            <h4>${data.lottery_users}</h4>                  
+                            <h4>תוצאות ההגרלה:</h4>
+                            <p><strong>זוכה:</strong> ${data.winner}</p>
+                            <p><strong>ציון מינימום:</strong> ${data.minimum_score}</p>
+                            <p><strong>תאריך ההגרלה:</strong> ${data.lottery_date}</p>
+                            <p><strong>תיאור:</strong> ${data.description}</p>
+                            <p><strong>סטטוס:</strong> ${data.status}
+                        `;
+                        
+                        // הצגת המודל
+                        document.getElementById('lotteryResults').innerHTML = content;
+                        const modal = new bootstrap.Modal(document.getElementById('lotteryModal'));
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('שגיאה:', error);
+                        alert('התרחשה שגיאה בטעינת תוצאות ההגרלה');
+                    });
+
+                }
+            });
+        });
+        
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            console.log('נתוני הטופס:', Object.fromEntries(formData));
+            
+            form.reset();
+            
+            alert('ההודעה נשלחה בהצלחה!');
+        }
+    </script>
+</body>
+</html>

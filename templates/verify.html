@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אימות נוסף</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2>אימות נוסף</h2>
+    <form method="POST">
+        <label for="u">שם משתמש</label>
+        <input type="password" name="u" required>
+        <label for="password">הכנס סיסמה:</label>
+        <input type="password" name="password" required>
+        <button type="submit">אשר</button>
+    </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="{{ category }}">{{ message }}</p>
+            {% endfor %}
+            <p>שם משתמש: {{ request.form.get('u') }}</p>
+        {% endif %}
+    {% endwith %}
+
+</body>
+</html>

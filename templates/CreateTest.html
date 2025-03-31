@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>טופס מבחן משופר</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #FF4081;
+            --background-light: #f8f9fa;
+            --spacing-unit: calc(8px + 1.5625vw);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            background-color: var(--background-light);
+            min-height: 100vh;
+            padding: var(--spacing-unit);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: calc(2 * var(--spacing-unit));
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: calc(2 * var(--spacing-unit));
+            border-radius: 12px 12px 0 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            padding: var(--spacing-unit);
+        }
+
+        label {
+            display: block;
+            margin-bottom: calc(0.5 * var(--spacing-unit));
+            font-weight: 500;
+            color: #333;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: calc(0.75 * var(--spacing-unit));
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.2);
+        }
+
+        .question-container {
+            background: var(--background-light);
+            border-radius: 8px;
+            padding: calc(1.5 * var(--spacing-unit));
+            margin: var(--spacing-unit) 0;
+            transition: transform 0.2s;
+        }
+
+        .question-container:hover {
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: calc(0.75 * var(--spacing-unit));
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            margin-bottom: calc(0.5 * var(--spacing-unit));
+        }
+
+        .answer-input {
+            display: flex;
+            align-items: center;
+            gap: calc(1 * var(--spacing-unit));
+            margin: calc(1 * var(--spacing-unit)) 0;
+            padding: calc(0.75 * var(--spacing-unit));
+            background: white;
+            border-radius: 8px;
+        }
+        .submit-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: calc(0.75 * var(--spacing-unit));
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s, background-color 0.2s;
+            margin: calc(0.5 * var(--spacing-unit)) 0;
+            width: 100%;
+        }
+        .answer-input input[type="text"] {
+            flex-grow: 1;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: calc(0.75 * var(--spacing-unit));
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s, background-color 0.2s;
+            margin: calc(0.5 * var(--spacing-unit)) 0;
+        }
+
+        button:hover {
+            background: #1976D2;
+            transform: translateY(-1px);
+        }
+
+        button.delete {
+            background: var(--secondary-color);
+            padding: calc(0.25 * var(--spacing-unit)) calc(0.75 * var(--spacing-unit));
+        }
+
+        .error {
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+            margin-top: calc(0.25 * var(--spacing-unit));
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: calc(4px + 1.5625vw);
+            }
+            
+            .container {
+                padding: calc(1 * var(--spacing-unit));
+                margin: 0 calc(0.5 * var(--spacing-unit));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>טופס מבחן</h1>
+        </header>
+        
+        <form id="test-form">
+            <div class="form-group">
+                <label>סוג מבחן:</label>
+                <select id="test_type" required>
+                    <option value="">בחר סוג מבחן</option>
+                    <option value="יומי">יומי</option>
+                    <option value="שבועי">שבועי</option>
+                    <option value="חודשי">חודשי</option>
+                </select>
+                <div id="test_type-error" class="error"></div>
+
+            <label>מסכת:</label>
+            <input type="text" id="tract" placeholder="הכנס מסכת" required>
+            <div id="tract-error" class="error"></div>
+
+            <label>מדף:</label>
+            <input type="text" id="From_page"  required>
+            <div id="From_page-error" class="error"></div>
+
+            <label>עמוד</label>
+            <select id="From_column" required>
+                <option value="">בחר עמוד</option>
+                <option value="א">א</option>
+                <option value="ב">ב</option>
+            </select>
+            <div id="From_column-error" class="error"></div>
+
+            <label>עד דף:</label>
+            <input type="text" id="Up_to_page"  required>
+            <div id="Up_to_page-error" class="error"></div>
+
+            <label>עמוד</label>
+            <select id="Up_to_column" required>
+                <option value="">בחר עמוד</option>
+                <option value="א">א</option>
+                <option value="ב">ב</option>
+            </select>
+            <div id="Up_to_column-error" class="error"></div>
+
+            <label>שנה</label>
+            <select id="year" required>
+                <option value="">בחר שנה</option>
+                <option value="תשפ'ה">תשפ"ה</option>
+                <option value="תשפ'ו">תשפ"ו</option>
+                <option value="תשפ'ז">תשפ"ז</option>
+            </select>
+            <div id="year-error" class="error"></div>
+
+            <label>חודש</label>
+            <select id="month" required>
+                <option value="">בחר חודש</option>
+                <option value="תשרי">תשרי</option>
+                <option value="חשוון">חשוון</option>
+                <option value="כסליו">כסליו</option>
+                <option value="טבת">טבת</option>
+                <option value="שבט">שבט</option>
+                <option value="אדר">אדר</option>
+                <option value="ניסן">ניסן</option>
+                <option value="אייר">אייר</option>
+                <option value="סיון">סיון</option>
+                <option value="תמוז">תמוז</option>
+                <option value="אב">אב</option>
+                <option value="אלול">אלול</option>
+            </select>
+            <div id="month-error" class="error"></div>
+
+            <label>שבוע:</label>
+            <input type="text" id="week" required>
+            <div id="week-error" class="error"></div>
+            <div id="questions-container">
+                <button type="button" onclick="addQuestion()" style="margin-top: 1rem;">הוסף שאלה</button>
+    
+            </div>
+        </div>
+
+
+        
+    </form>
+    </div>
+   
+    <script>
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container';
+            questionDiv.innerHTML = `
+                <label>שאלה:</label>
+                <textarea style="width: 100%; height: 60px; margin-bottom: calc(0.5 * var(--spacing-unit));"></textarea>
+                <div class="answers-container">
+                    <button type="button" onclick="addAnswer(event, this)">הוסף תשובה</button>
+                </div>
+            `;
+            container.appendChild(questionDiv);
+        }
+
+        function addAnswer(event, button) {
+            // מונע פרימד של הכפתור
+            event.stopPropagation();
+            
+            const answersContainer = button.parentElement;
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'answer-input';
+            answerDiv.innerHTML = `
+                <input type="text" placeholder="תשובה">
+                <label>
+                    <input type="radio" name="correct-answer-${Date.now()}">
+                    תשובה נכונה
+                </label>
+                <button type="button" onclick="removeAnswer(event, this)" class="delete">מחק</button>
+            `;
+            answersContainer.appendChild(answerDiv);
+        }
+
+        function removeAnswer(event, button) {
+            event.stopPropagation();
+            button.parentElement.remove();
+        }
+
+        function validateForm() {
+            let isValid = true;
+            const errors = {
+                test_type: 'נא לבחור סוג מבחן',
+                tract: 'נא להזין מסכת',
+                From_page: 'נא להזין עמוד ',
+                From_column: 'נא להזין  עמוד ',
+                Up_to_page: 'נא להזין עד דף ',
+                Up_to_column: 'נא להזין   עמוד',
+                year: 'נא להזין שנה',
+                month: 'נא להזין חודש ',
+                week: 'נא להזין שבוע '
+            };
+        
+            // בדיקת שדות חובה
+            ['test_type', 'tract','From_page', 'From_column', 'Up_to_page', 'Up_to_column', 'year', 'month', 'week'].forEach(field => {
+                const element = document.getElementById(field);
+                const errorElement = document.getElementById(`${field}-error`);
+                
+                if (!element.value && errorElement) {
+                    errorElement.textContent = errors[field];
+                    isValid = false;
+                } else if (errorElement) {
+                    errorElement.textContent = '';
+                }
+            });
+        
+            // בדיקת שאלות ותשובות
+            const questions = document.querySelectorAll('.question-container');
+            questions.forEach((question, index) => {
+                const textarea = question.querySelector('textarea');
+                const errorElement = document.getElementById(`question-${index}-error`);
+                
+                if (!textarea.value && errorElement) {
+                    errorElement.textContent = 'נא להזין שאלה';
+                    isValid = false;
+                } else if (errorElement) {
+                    errorElement.textContent = '';
+                }
+        
+                const answers = question.querySelectorAll('.answer-input input[type="text"]');
+                const answersErrorElement = document.getElementById(`answers-${index}-error`);
+                
+                if (answers.length === 0 && answersErrorElement) {
+                    answersErrorElement.textContent = 'נא להוסיף לפחות תשובה אחת';
+                    isValid = false;
+                } else if (answersErrorElement) {
+                    answersErrorElement.textContent = '';
+                }
+            });
+        
+            return isValid;
+        }
+
+        function submitForm() {
+            if (!validateForm()) return;
+
+            const testData = {
+                test_type: document.getElementById('test_type').value,
+                tract: document.getElementById('tract').value,
+                From_page: document.getElementById('From_page').value,
+                From_column: document.getElementById('From_column').value,
+                Up_to_page: document.getElementById('Up_to_page').value,
+                Up_to_column: document.getElementById('Up_to_column').value,
+                year: document.getElementById('year').value,
+                month: document.getElementById('month').value,
+                week: document.getElementById('week').value,
+                questions: []
+            };
+
+            const questionContainers = document.querySelectorAll('.question-container');
+            
+            questionContainers.forEach((container, index) => {
+                const questionText = container.querySelector('textarea').value;
+                const answers = [];
+                
+                container.querySelectorAll('.answer-input input[type="text"]').forEach((input, answerIndex) => {
+                    const answerText = input.value;
+                    const isCorrect = container.querySelectorAll('.answer-input input[type="radio"]')[answerIndex].checked;
+                    
+                    if (answerText) {
+                        answers.push({
+                            answer: answerText,
+                            correct_answer: isCorrect
+                        });
+                    }
+                });
+
+                if (questionText && answers.length > 0) {
+                    testData.questions.push({
+                        question: questionText,
+                        answers: answers
+                    });
+                }
+            });
+            
+
+            console.log(JSON.stringify(testData, null, 2));
+            
+            // כאן תוכלו להוסיף שליחת הנתונים לשרת
+            fetch('/Add_test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(testData)
+            })
+            .then(response => response.json()) // ממיר את התשובה ל-JSON
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect; // הפניה לדף החדש
+                } else if (data.error) {
+                    alert('שגיאה: ' + data.error);
+                } else {
+                    alert('תשובת השרת: ' + JSON.stringify(data));
+                }
+            })
+            .catch(error => alert('שגיאה: ' + error));
+        }
+
+                        
+
+        // הוספת שאלה ראשונה באופן אוטומטי
+        addQuestion();
+
+        // הוספת כפתור שליחה
+        const submitButton = document.createElement('button');
+        submitButton.textContent = 'שלח מבחן';
+        submitButton.className = 'submit-button';
+        submitButton.onclick = submitForm;
+        document.body.querySelector(".container").appendChild(submitButton);
+    </script>
+</body>
+</html>

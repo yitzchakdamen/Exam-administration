@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>הרשמה</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2>הרשמה</h2>
+    <form method="POST">
+        <input type="text" name="username" placeholder="שם משתמש" required>
+        <input type="password" name="password" placeholder="סיסמה" required>
+        <button type="submit">הירשם</button>
+    </form>
+    <a href="{{ url_for('login') }}">כבר יש לך חשבון? התחבר</a>
+</body>
+</html>

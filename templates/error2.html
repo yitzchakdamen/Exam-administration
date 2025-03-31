@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המבחן הסתיים!</title>
+    
+    <!-- Animate.css לאנימציות מודרניות -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- עיצוב בסיסי ועיצובים מותאמים אישית -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            direction: rtl;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 1rem;
+            animation: bounceIn 1s ease-out;
+        }
+
+        p {
+            color: white;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.5s backwards;
+        }
+
+        .home-button {
+            background: linear-gradient(145deg, #6366f1, #4f46e5);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/favicon.jpg" alt="תמונה" style="width: 150px; height: auto; padding: 10px;">
+        <h1 class="animate__animated animate__bounceIn">המבחן הוסף בהצלחה!</h1>
+        <p class="animate__animated animate__fadeInUp">תודה שהשתתפת! אנא לחץ על הכפתור לחזרה לדף הבית.</p>
+        <button onclick="window.location.href='/'" 
+                class="home-button animate__animated animate__pulse infinite">
+            לדף הבית
+        </button>
+    </div>
+
+    <!-- Animate.css יובא מ-CSS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.js"></script>
+</body>
+</html>

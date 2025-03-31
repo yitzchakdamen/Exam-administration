@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חלונות הודעה</title>
+    <!-- Font Awesome לאייקונים -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* עיצוב בסיסי */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+        /* עיצוב חלון ההודעה */
+        #notification-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: none;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* עיצוב התוכן */
+        .notification-icon {
+            float: left;
+            margin-right: 20px;
+            font-size: 24px;
+        }
+
+        .notification-content {
+            overflow: hidden;
+        }
+
+        #notification-title {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #notification-message {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* כפתור סגירה */
+        #close-notification {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        #close-notification:hover {
+            opacity: 1;
+        }
+
+        /* עיצוב לסוגי הודעות שונים */
+        .success .notification-icon {
+            color: #4CAF50;
+        }
+
+        .error .notification-icon {
+            color: #F44336;
+        }
+
+        .info .notification-icon {
+            color: #2196F3;
+        }
+    </style>
+
+
+
+</head>
+<body>
+    <!-- כפתורים להצגת ההודעות -->
+    <button onclick="showNotification('success')" class="demo-btn">הצלחה!</button>
+    <button onclick="showNotification('error')" class="demo-btn">שגיאה!</button>
+    <button onclick="showNotification('info')" class="demo-btn">מידע</button>
+
+    <!-- חלון ההודעה -->
+    <div id="notification-container">
+        <div id="notification" class="notification">
+            <div class="notification-icon">
+                <i id="notification-icon" class="fas"></i>
+            </div>
+            <div class="notification-content">
+                <h2 id="notification-title"></h2>
+                <p id="notification-message"></p>
+            </div>
+            <button id="close-notification">×</button>
+        </div>
+    </div>
+
+    <script>
+        function showNotification(type, title = '', message = '') {
+            const notification = document.getElementById('notification');
+            const container = document.getElementById('notification-container');
+            const icon = document.getElementById('notification-icon');
+            const notificationTitle = document.getElementById('notification-title');
+            const notificationMessage = document.getElementById('notification-message');
+        
+            // הגדרת טקסט ברירת מחדל
+            switch(type) {
+                case 'success':
+                    title = title || 'הפעולה בוצעה בהצלחה!';
+                    message = message || 'הנתונים נשמרו בהצלחה.';
+                    icon.className = 'fas fa-check';
+                    break;
+                case 'error':
+                    title = title || 'שגיאה!';
+                    message = message || 'התרחשה שגיאה. נסה שוב.';
+                    icon.className = 'fas fa-times';
+                    break;
+                case 'info':
+                    title = title || 'מידע חשוב';
+                    message = message || 'יש לך מידע חדש.';
+                    icon.className = 'fas fa-info';
+                    break;
+            }
+        
+            // עדכון התוכן
+            notificationTitle.textContent = title;
+            notificationMessage.textContent = message;
+        
+            // הסרת כל הקלאסים הקודמים
+            notification.classList.remove('success', 'error', 'info');
+            
+            // הוספת הקלאס המתאים
+            notification.classList.add(type);
+        
+            // הצגת ההודעה
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+        
+            // סגירה אוטומטית אחרי 5 שניות
+            setTimeout(() => {
+                closeNotification();
+            }, 3000);
+        }
+        
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 400);
+        }
+        
+        // הוספת מאזיני אירועים
+        document.getElementById('close-notification').addEventListener('click', closeNotification);
+
+    </script>
+</body>
+</html>

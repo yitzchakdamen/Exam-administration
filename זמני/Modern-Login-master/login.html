@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Registration</title>
+    <style>
+        /* סגנונות בסיסיים */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input {
+            width: 80%;
+
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Login</h2>
+        <input type="text" id="id_number" placeholder="מספר זהות" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="login_btn">Login</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        async function login() {
+            const id_number = document.getElementById('id_number').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_number, password })
+                });
+
+                console.log(response.status);
+                console.log(response);
+
+                if (response.status === 200) {
+                    // אם השרת מחזיר הפניה (כמו לדף הבית)
+                    window.location.href = response.url;  // הפניית הלקוח לדף שהשרת שלח
+                } else {
+                    // אם לא הייתה הפניה, מטפלים בשגיאה
+                    const data = await response.json();
+                    document.getElementById("message").innerText = data.message || data.error;
+                }
+            } catch (error) {
+                console.log('Error:', error);  // הודעת שגיאה במקרה של בעיה
+                document.getElementById("message").innerText = "An error occurred!";
+            }
+        }
+
+        document.getElementById('login_btn').addEventListener('click', login);
+    </script>
+
+</body>
+
+</html>

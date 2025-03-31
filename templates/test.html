@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>מבחן </title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --background-color: #f5f5f5;
+            --card-background: white;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--background-color);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-background);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .header-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-background);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .header-container_2 {
+            background-color: #f1f1f1;
+            margin: 20px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 1rem;
+            font-weight: 400;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #45a049);
+            width: 0%;
+            transition: width var(--transition-speed) ease;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .timer.warning {
+            color: #ff9800;
+            animation: pulse 1s infinite;
+        }
+
+        .timer.danger {
+            color: #ff0000;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .question-container {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            color: #222;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .option {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-size: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .option.selected {
+            border-color: var(--primary-color);
+            background: #f1f8e9;
+        }
+
+        .option.correct {
+            border-color: var(--primary-color);
+            background: #e8f5e9;
+            animation: correctAnswer 0.5s ease;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+            animation: incorrectAnswer 0.5s ease;
+        }
+
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes incorrectAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #f44336;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all var(--transition-speed) ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #ebebeb;
+            transform: translateY(-2px);
+        }
+
+        .results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f1f8e9;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .result-item .option {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .result-item .option.selected-option {
+            background-color: #ffebee;
+            border: 1px solid #ef5350;
+        }
+        
+        .result-item .option.correct-answer {
+            background-color: #e8f5e9;
+            border: 1px solid #66bb6a;
+        }
+        
+        .result-item .option.selected-option:not(.correct-answer) {
+            background-color: #ffebee;
+            color: #ef5350;
+        }
+        
+        .result-item .option.correct-answer {
+            background-color: #e8f5e9;
+            color: #66bb6a;
+        }
+        
+        .correct-mark {
+            margin-left: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .option {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container" id="header"></div>
+    <div class="quiz-container" >
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="timer" id="timer"></div>
+        <div id="question-container"></div>
+        <div class="controls">
+            <button class="btn-secondary" id="prev-btn">שאלה קודמת</button>
+            <button class="btn-primary" id="next-btn">שאלה הבאה</button>
+            <button class="btn-primary" id="submit-btn">סיום המבחן</button>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let selectedAnswers = [];
+        let timeLeft = 120;
+        let time = 0;
+        let timerInterval;
+        let data;
+        let questions;
+        let responseData;
+
+        const baseUrl = window.location.origin;  // כתובת הבסיס של האתר
+        const testId = "{{ test_id }}";
+        const progress = document.getElementById('progress');
+        const timer = document.getElementById('timer');
+        const questionContainer = document.getElementById('question-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        //const urlParams = new URLSearchParams(window.location.search);
+        //const testId = urlParams.get('test_id') || '{{ test_id }}';
+
+
+
+
+        async function stert() {
+            await fetchData(); // מוודאים שהנתונים נטענים לפני המשך הקוד
+            if (!data || !data.questions) {
+                console.error("שגיאה: הנתונים לא נטענו כראוי.");
+                return;
+            }
+            data = data;
+            questions = data.questions;
+            
+
+            loadHeader();
+            loadQuestion();
+            updateTimer(timeLeft);
+        };
+        
+
+        async function fetchData() {
+            const url = `${baseUrl}/get_test/${testId}`;  // יוצרים את הכתובת המלאה
+            const response = await fetch(url);
+            data = await response.json();
+            
+        }
+        
+        function loadHeader(){
+            const header = document.getElementById('header');
+            header.innerHTML = `
+            <div>
+                 מבחן ${data.test_type} ${data.test_id}# 
+            </div>
+            <div class="header-container_2">
+                <div class="header-container_2_1">מסכת ${data.tract} </div>
+                <div class="header-container_2_1">דף ${data.From_page} עמוד ${data.From_column}' - ${data.Up_to_page} עמוד ${data.Up_to_column}'</div>
+                <div class="header-container_2_1">${data.month} ${data.year} </div>
+                <div class="header-container_2_1">פרשת ${data.week}</div>
+            </div>
+            `
+        }
+
+
+        function updateProgress() {
+            const progressWidth = ((currentQuestion + 1)  / questions.length  ) * 100;
+            // Set the width of the progress bar to the calculated percentage
+            progress.style.width = `${progressWidth}%`;
+        }
+
+        function updateTimer(timeLeft) {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                time++;
+                timer.textContent = `נתרו ${timeLeft} שניות  |  עברו ${time} שניות`;
+                
+                if (timeLeft <= 10) {
+                    timer.classList.add('warning');
+                    if (timeLeft <= 5) {
+                        timer.classList.add('danger');
+                    }
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    updateProgress()
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            prevBtn.style.display =  'inline-block';
+            nextBtn.style.display =  'inline-block';
+
+            const question = questions[currentQuestion];
+            questionContainer.innerHTML = `
+                <div class="question-text">${question.question}?</div>
+                <div class="options-container"></div>
+                <div class="feedback"></div>
+            `;
+            
+            const optionsContainer = questionContainer.querySelector('.options-container');
+            const feedback = questionContainer.querySelector('.feedback');
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('button');
+                optionElement.className = 'option';
+                optionElement.textContent = `${option.answer}`;
+                
+                optionElement.addEventListener('click', () => {
+                    selectOption(index);
+                });
+                
+                if (selectedAnswers[currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionsContainer.appendChild(optionElement);
+                updateButtons();
+                updateProgress();
+            });
+        }
+
+        function selectOption(index) {
+            const options = questionContainer.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            options[index].classList.add('selected');
+            selectedAnswers[currentQuestion] = questions[currentQuestion].options[index].answer_id;
+        }
+
+        function updateButtons() {
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.disabled = currentQuestion === questions.length;
+            submitBtn.style.display = currentQuestion === questions.length - 1 ? 'inline-block' : 'none';
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentQuestion--;
+            loadQuestion();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestion++;
+
+            if (currentQuestion < questions.length ) {
+                loadQuestion();
+            } else {
+                alert('הגעת לסוף המבחן! לחץ על "סיום המבחן" כדי להגיש.');
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            if (confirm('האם אתה בטוח שברצונך לסיים את המבחן ולהגיש?')) {
+                showResults();
+            }
+        });
+
+        function showResults() {
+            clearInterval(timerInterval);
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'none';
+            
+            questionContainer.innerHTML = `
+                <div class="results">
+                    <h2>תוצאות המבחן</h2>
+                    <p>שאלות: ${getScore()} / ${questions.length} </p>
+                    <p>ציון: ${((getScore() / questions.length) * 100).toFixed(1)}%</p>
+                    <div class="detailed-results"></div>
+                </div>
+            `;
+            
+            const detailedResults = questionContainer.querySelector('.detailed-results');
+            
+            questions.forEach((q, index) => {
+                const selectedAnswerId = selectedAnswers[index];
+                const correctOption = q.options.find(opt => opt.correct_answer === "true");
+                const isCorrect = selectedAnswerId === correctOption.answer_id;
+                
+                detailedResults.innerHTML += `
+                    <div class="result-item">
+                        <h3>שאלה ${index + 1}</h3>
+                        <p>${q.question}</p>
+                        
+                        <div class="options-container">
+                            ${q.options.map(option => `
+                                <div class="option ${option.answer_id === selectedAnswerId ? 
+                                    'selected-option' : ''} ${option.correct_answer === "true" ? 
+                                    'correct-answer' : ''}">
+                                    <p>${option.answer}</p>
+                                    ${option.correct_answer === "true" ? 
+                                        '<span class="correct-mark">✅</span>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+        
+                        ${isCorrect ? 
+                            '<p class="correct">נכון! ✅</p>' : 
+                            '<p class="incorrect">לא נכון! ❌</p>'}
+                        
+                        <div class="correct-answer">
+                            <strong>התשובה הנכונה:</strong>
+                            ${correctOption.answer}
+                        </div>
+                    </div>
+                `;
+            });
+            submitQuizResults();
+        }
+
+        function getScore() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selectedAnswerId = selectedAnswers[index];
+                const correctOption = q.options.find(opt => opt.correct_answer === "true");
+                
+                if (selectedAnswerId === correctOption.answer_id) {
+                    score++;
+                }
+            });
+            return score;
+        }
+        async function submitQuizResults() {
+            try {
+                const score = ((getScore() / questions.length) * 100).toFixed(1);
+                const quizId = data.test_id; // הנחה שה-ID של המבחן נמצא בשאלה הראשונה
+                
+                const response = await fetch(`${baseUrl}/submit-quiz`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        quizId: quizId,
+                        score: score
+                    })
+                });
+        
+                responseData  = await response.json();
+        
+                if (responseData.success) {
+                    console.log('התוצאות נשלחו בהצלחה!');
+                    questionContainer.querySelector('.results').insertAdjacentHTML('beforeend', `
+                    <p style="margin-top: 1rem; font-size: 1.1rem; color: var(--primary-color);">
+                        המבחן הוגש בהצלחה! תודה על השתתפותך.
+                        ${responseData.lottery}
+                    </p>
+                        <div class="flex justify-center items-center mb-4">            
+                            <button class="take-test-btn_2"
+                            onclick="window.location.href='/test2'"
+                            >המשך</button>
+                    </div>
+                    `);
+                    return true;
+                } else {
+                    console.error('שגיאה בשליחת התוצאות:', responseData.error);
+                    questionContainer.querySelector('.results').insertAdjacentHTML('beforeend', `
+                    <p style="margin-top: 1rem; font-size: 1.1rem; color: var(--primary-color);">
+                        שגיאה בשליחת התוצאות:
+                    </p>
+                        <div class="flex justify-center items-center mb-4">            
+                            <button class="take-test-btn_2"
+                            onclick="window.location.href='/test2'"
+                            >המשך</button>
+                    </div>
+                    `);
+                    return false;
+                }
+            } catch (error) {
+                console.error('שגיאה בשליחת התוצאות:', error);
+                return false;
+            }
+        }
+        stert();
+        
+    </script>
+</body>
+</html>

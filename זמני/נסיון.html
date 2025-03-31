@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<style>
+.form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 35px;
+    background: linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%);
+    border-radius: 20px;
+    box-shadow: 20px 20px 60px #bebebe,
+               -20px -20px 60px #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-title {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 35px;
+    font-weight: 600;
+    position: relative;
+    display: inline-block;
+}
+
+.form-title::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    border-radius: 2px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.form-input {
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.form-input:focus {
+    outline: none;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3),
+                inset 0 2px 4px rgba(0,0,0,0.05);
+    background: white;
+}
+
+.form-input:focus + .floating-label {
+    transform: translateY(-25px);
+    font-size: 14px;
+    color: #2980b9;
+}
+
+.floating-label {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.submit-button {
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    padding: 18px 36px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 25px;
+}
+
+.submit-button:hover {
+    background: linear-gradient(90deg, #2980b9, #3498db);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+    transform: translateY(-2px);
+}
+
+/* אנימציות נוספות */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.form-container:hover {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* אפקט זוהר לכפתור */
+.submit-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.submit-button:hover::after {
+    opacity: 1;
+    animation: glow 2s infinite;
+}
+
+@keyframes glow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+<div class="form-container">
+    <div class="form-title">צור קשר עימנו</div>
+    
+    <form id="feedbackForm" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+            <input type="text" id="name" name="name" class="form-input" required placeholder=": שם מלא ">
+            <label for="name" class="floating-label">שם מלא</label>
+        </div>
+
+        <div class="form-group">
+            <input type="email" id="email" name="email" class="form-input" required placeholder="כתובת email">
+            <label for="email" class="floating-label">כתובת אימייל</label>
+        </div>
+
+        <div class="form-group">
+            <textarea id="message" name="message" class="form-input" rows="5" required placeholder="כתבו את הודעתכם כאן..."></textarea>
+            <label for="message" class="floating-label">הודעתך</label>
+        </div>
+
+        <button type="submit" class="submit-button">
+            שלח הודעה
+        </button>
+    </form>
+</div>
+
+<script>
+function handleSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    console.log('נתוני הטופס:', Object.fromEntries(formData));
+    
+    form.reset();
+    
+    alert('ההודעה נשלחה בהצלחה!');
+}
+</script>
+</body>
+</html>
